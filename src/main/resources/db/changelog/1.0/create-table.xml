@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="create-table-users" author="uPagge">
+        <createTable tableName="users">
+            <column name="id_user" type="int" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="birthday" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="placeofbirth" type="varchar(350)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location" type="varchar(350)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telephone" type="varchar(13)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-conversation" author="uPagge">
+        <createTable tableName="conversation">
+            <column name="id_conversation" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name_conversation" type="varchar(360)"/>
+            <column name="group_true" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-friends" author="uPagge">
+        <createTable tableName="friends">
+            <column name="id_user" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_signed" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mutually_signed" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-attachment" author="uPagge">
+        <createTable tableName="attachment">
+            <column name="id_attachment" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="timestamp" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file" type="varchar">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-message" author="uPagge">
+        <createTable tableName="messages">
+            <column name="id_message" type="int">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="timestamp" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="varchar(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_user_send" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_attachment" type="int"/>
+            <column name="id_conversation" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-many-to-many_users" author="">
+        <createTable tableName="conversation_many_to_many">
+            <column name="id_conversation" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_user" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_reporter" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create-table-many-to-many_messages" author="">
+        <createTable tableName="messages_many_to_many">
+            <column name="id_user_send" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id_message" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="friend_primary_group" author="uPagge">
+        <addPrimaryKey
+                tableName="friends"
+                columnNames="id_user, id_signed"
+                constraintName="user_signed"/>
+    </changeSet>
+
+    <changeSet id="user_friend" author="uPagge">
+        <addForeignKeyConstraint baseTableName="friends"
+                                 baseColumnNames="id_user"
+                                 constraintName="user_friend"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id_user"/>
+    </changeSet>
+
+    <changeSet id="user_friend_signed" author="uPagge">
+        <addForeignKeyConstraint baseTableName="friends"
+                                 baseColumnNames="id_signed"
+                                 constraintName="user_friend_signed"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id_user"/>
+    </changeSet>
+
+    <changeSet id="user_conversation" author="uPagge">
+        <addPrimaryKey
+                tableName="conversation_many_to_many"
+                columnNames="id_user, id_conversation"
+                constraintName="user_conversations"/>
+    </changeSet>
+
+    <changeSet id="user_conversations" author="uPagge">
+        <addForeignKeyConstraint baseTableName="conversation_many_to_many"
+                                 baseColumnNames="id_user"
+                                 constraintName="user_conversation"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id_user"/>
+    </changeSet>
+
+    <changeSet id="conversation_many" author="uPagge">
+        <addForeignKeyConstraint baseTableName="conversation_many_to_many"
+                                 baseColumnNames="id_conversation"
+                                 constraintName="conversation_many_many"
+                                 referencedTableName="conversation"
+                                 referencedColumnNames="id_conversation"/>
+    </changeSet>
+
+    <changeSet id="messages_many" author="uPagge">
+        <addForeignKeyConstraint baseTableName="messages_many_to_many"
+                                 baseColumnNames="id_message"
+                                 constraintName="messages_many_many"
+                                 referencedTableName="messages"
+                                 referencedColumnNames="id_message"/>
+    </changeSet>
+
+    <changeSet id="messages_user" author="uPagge">
+        <addForeignKeyConstraint baseTableName="messages_many_to_many"
+                                 baseColumnNames="id_user_send"
+                                 constraintName="messages_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id_user"/>
+    </changeSet>
+
+    <changeSet id="messages_userr" author="uPagge">
+        <addForeignKeyConstraint baseTableName="messages"
+                                 baseColumnNames="id_conversation"
+                                 constraintName="messages_conversation"
+                                 referencedTableName="conversation"
+                                 referencedColumnNames="id_conversation"/>
+    </changeSet>
+
+    <changeSet id="messages_attachment" author="uPagge">
+        <addForeignKeyConstraint baseTableName="messages"
+                                 baseColumnNames="id_attachment"
+                                 constraintName="messages_attachment"
+                                 referencedTableName="attachment"
+                                 referencedColumnNames="id_attachment"/>
+    </changeSet>
+
+    <changeSet id="user_messages" author="uPagge">
+        <addPrimaryKey
+                tableName="messages_many_to_many"
+                columnNames="id_user_send, id_message"
+                constraintName="user_message"/>
+    </changeSet>
+
+
+</databaseChangeLog>

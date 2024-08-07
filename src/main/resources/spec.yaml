@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  title: Работа мессенджера
+  version: 1.0.0
+paths:
+  /users:
+    get:
+      summary: Получение всех пользователей
+      responses:
+        '200':
+          description: Успешный запрос. Возвращается список всех пользователей
+    post:
+      summary: Создание нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                birthday:
+                  type: Date
+                placeOfbirth:
+                  type: string
+                location:
+                  type: string
+                telephone:
+                  type: string
+      responses:
+        '201':
+          description: Пользователь успешно создан.
+
+  /users/{userId}:
+    get:
+      summary: Получение данных пользователя
+      responses:
+        '200':
+          description: Успешный запрос. Возвращается список всех пользователей
+    delete:
+      summary: Удаление пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+      responses:
+        '202':
+          description: Пользователь успешно удален.
+  /user/{userId}/friend:
+    get:
+      summary: Получение всех друзей у пользователя
+      responses:
+        '200':
+          description: Список друзей получен
+    post:
+      summary: friendAdd
+      parameters:
+        - name: friendId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Created
+    delete:
+      summary: Удаление друзей
+      parameters:
+        - name: friendId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Удален друг
+  /conversation/{userId}/conversationmessageId/{conversationId}/messages:
+    get:
+      summary: Получение сообщение пользователя в беседе
+      responses:
+        '200':
+          description: OK
+  /conversation/{conversationId}:
+    get:
+      summary: Получение беседы
+      responses:
+        '200':
+          description: OK
+  /conversation/{userId}/conversationId/{conversationId}:
+      patch:
+        summary: Обновление беседы
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nameConversation:
+                    type: string
+                  idAssigner:
+                    type: integer
+        responses:
+          '200':
+            description: Updated
+      post:
+        summary: Создание сообщения
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  idUserSend:
+                    type: integer
+        responses:
+          '200':
+            description: Создано сообщение
+  /conversation/{userId}:
+    post:
+      summary: Создание беседы
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nameConversation:
+                  type: string
+                idUserAssigner:
+                  type: integer
+      responses:
+        '200':
+          description: Created
+    delete:
+      summary: Удаление беседы
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                conversationId:
+                  type: integer
+                idAssigner:
+                  type: integer
+      responses:
+        '200':
+          description: Удалена беседа
